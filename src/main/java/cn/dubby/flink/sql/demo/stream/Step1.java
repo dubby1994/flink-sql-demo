@@ -2,6 +2,7 @@ package cn.dubby.flink.sql.demo.stream;
 
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableEnvironment;
@@ -29,7 +30,7 @@ public class Step1 {
         tableEnvironment.registerTableSource("CsvSourceTable", csvSource);
 
         //  创建一个 sink
-        TableSink<org.apache.flink.types.Row> csvSink = new CsvTableSink("D:\\JavaRepo\\flink-sql-demo\\src\\main\\resources\\sink", ",");
+        TableSink<org.apache.flink.types.Row> csvSink = new CsvTableSink("D:\\JavaRepo\\flink-sql-demo\\src\\main\\resources\\sink", ",", 2, FileSystem.WriteMode.OVERWRITE);
         String[] fieldNames = {"id", "greeting"};
         TypeInformation[] sinkFieldTypes = {Types.INT, Types.STRING};
         tableEnvironment.registerTableSink("CsvSinkTable", fieldNames, sinkFieldTypes, csvSink);
@@ -39,12 +40,12 @@ public class Step1 {
         tableEnvironment.registerExternalCatalog("InMemCatalog", catalog);
 
         // 创建一个 view
-        Table table = tableEnvironment.scan("CsvSourceTable").select("id, 'Hello, ' + name as name");
-        tableEnvironment.registerTable("NameView", table);
+        Table table = tableEnvironment.scan("CsvSourceTable").select("id, 'Hello, ' + name as greeting");
+        tableEnvironment.registerTable("GreetingView", table);
 
         Table greeting = tableEnvironment.sqlQuery(
-                "SELECT id, name AS greeting " +
-                        "FROM NameView "
+                "SELECT id, greeting " +
+                        "FROM GreetingView "
         );
 
         greeting.writeToSink(csvSink);

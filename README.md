@@ -4,3 +4,18 @@
 
 
 https://yq.aliyun.com/articles/457438
+
+
+创建Java应用:
+
+```
+mvn archetype:generate \
+    -DarchetypeGroupId=org.apache.flink \
+    -DarchetypeArtifactId=flink-quickstart-java \
+    -DarchetypeVersion=1.8.0 \
+    -DgroupId=cn.dubby \
+    -DartifactId=flink-sql-demo \
+    -Dversion=0.1 \
+    -Dpackage=cn.dubby.flink.sql.demo \
+    -DinteractiveMode=false
+```

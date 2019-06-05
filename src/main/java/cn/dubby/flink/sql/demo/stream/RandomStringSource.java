@@ -10,18 +10,20 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class RandomStringSource implements SourceFunction<String> {
 
-    private static final String[] strings = {"daoxuan", "yangzheng", "dubby"};
+    private static final String[] strings = {"a", "b", "c", "d", "e", "f"};
+
+    private volatile boolean cancel = false;
 
     @Override
     public void run(SourceContext<String> ctx) throws Exception {
-        for (int i = 0; i < 10000 * 10000; ++i) {
-            int random = ThreadLocalRandom.current().nextInt(3);
+        while (!cancel) {
+            int random = ThreadLocalRandom.current().nextInt(strings.length);
             ctx.collect(strings[random]);
         }
     }
 
     @Override
     public void cancel() {
-
+        cancel = true;
     }
 }
